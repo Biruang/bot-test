@@ -43,7 +43,7 @@ app.post("/message", async (req, res) => {
             }
             responce = 'Start tracking';
             const task = cron.schedule('* * * * *', () => {
-                console.log(chatId, 'ping text');
+                sendPing(chatId)
             }, {
                 scheduled: true,
                 timezone: "Europe/Moscow"
@@ -75,6 +75,19 @@ app.post("/message", async (req, res) => {
         res.send(e);
     }
 });
+
+const sendPing = async (id) => {
+    try {
+        await axios.post(`${TELEGRAM_URI}/sendMessage`, {
+            chat_id: id,
+            text: 'ping'
+        });
+        res.send('Done');
+    } catch (e) {
+        console.log(e);
+        res.send(e);
+    }
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
