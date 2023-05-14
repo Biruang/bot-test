@@ -28,11 +28,11 @@ app.use(
 
 let tasks = {}
 
-const sendPing = async (id) => {
+const sendPing = async (id, first_name) => {
     try {
         await axios.post(`${TELEGRAM_URI}/sendMessage`, {
             chat_id: id,
-            text: 'ping'
+            text: `${first_name}, твой смартфон набрал достаточное количество бактерий, позаботься о его чистоте и своем здоровье🤍`
         });
         res.send('Done');
     } catch (e) {
@@ -52,19 +52,19 @@ app.post("/message", async (req, res) => {
         return res.sendStatus(400)
     }
 
-    let responce = 'Please use correct comand';
+    let responce = 'Не понимаю команду';
     switch(text) {
         case '/start': {
             if(Boolean(tasks[chatId])) {
-                responce = 'Already tracking';
+                responce = "Напоминания уже включены";
                 break;
             }
-            responce = `"Привет, ${message.chat.id}!
+            responce = `"Привет, ${message.chat.first_name}!
                 Рад, что ты теперь со мной, готов изменить свою жизнь и начать регулярно заботиться о гигиене своего мобильного устройства.
                 Я буду присылать тебе напоминание о том, что пора протереть мобильный телефон❤️"`;
-                
+
             const task = cron.schedule('* * * * *', () => {
-                sendPing(chatId)
+                sendPing(chatId, message.chat.first_name)
             }, {
                 scheduled: true,
                 timezone: "Europe/Moscow"
@@ -75,7 +75,7 @@ app.post("/message", async (req, res) => {
         }
         case '/stop': {
             if(!tasks[chatId]){
-                responce = 'Already not tracking';
+                responce = "Сейчас нет активных напоминаний";
                 break;
             }
             responce = 'End tracking';
