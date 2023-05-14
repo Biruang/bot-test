@@ -7,10 +7,13 @@ import cron from 'node-cron';
 config();
 const TELEGRAM_URI = `https://api.telegram.org/bot${process.env.API_TOKEN}`;
 
-//Check webhook status before deploy
+// const res = await axios.get(`${TELEGRAM_URI}/deleteWebhook`)
+// log(res.data);
+
+// Check webhook status before deploy
 const status = await axios.get(`${TELEGRAM_URI}/getWebhookInfo`);
 if(!status?.data || !status?.data.result.url) {
-    log(`Setting webhook on url:${HOST_URL}`);
+    log(`Setting webhook on url:${process.env.HOST_URL}`);
     const res = await axios.post(`${TELEGRAM_URI}/setWebhook`, `url=${process.env.HOST_URL}/message`)
     log(res.data);
 }
@@ -24,6 +27,19 @@ app.use(
 )
 
 let tasks = {}
+
+const sendPing = async (id) => {
+    try {
+        await axios.post(`${TELEGRAM_URI}/sendMessage`, {
+            chat_id: id,
+            text: 'ping'
+        });
+        res.send('Done');
+    } catch (e) {
+        console.log(e);
+        res.send(e);
+    }
+}
 
 app.post("/message", async (req, res) => {
     const {message} = req.body;
@@ -75,19 +91,6 @@ app.post("/message", async (req, res) => {
         res.send(e);
     }
 });
-
-const sendPing = async (id) => {
-    try {
-        await axios.post(`${TELEGRAM_URI}/sendMessage`, {
-            chat_id: id,
-            text: 'ping'
-        });
-        res.send('Done');
-    } catch (e) {
-        console.log(e);
-        res.send(e);
-    }
-}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
