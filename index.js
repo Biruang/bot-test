@@ -34,14 +34,13 @@ const sendPing = async (id, name) => {
             chat_id: id,
             text: `${name}, твой смартфон набрал достаточное количество бактерий, позаботься о его чистоте и своем здоровье🤍`
         });
-        res.send('Done');
     } catch (e) {
         console.log(e);
-        res.send(e);
     }
 }
 
-cron.schedule('* * * * *', () => {
+cron.schedule('* * 6,11,16 * *', () => {
+    log('tasks', tasks);
     tasks.forEach((item) => sendPing(item.id, item.name)) 
 }, {
     scheduled: true,
@@ -49,12 +48,10 @@ cron.schedule('* * * * *', () => {
 });
 
 app.post("/message", async (req, res) => {
-    log('dddd', req)
     const message = req.body?.edited_message || req.body?.message
     const text = message?.text?.toLowerCase().trim();
     const chatId = message?.chat?.id;
 
-    log('receve', text, message?.chat);
     if (!text || !chatId) {
         return res.sendStatus(400)
     }
