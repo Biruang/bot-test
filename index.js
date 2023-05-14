@@ -12,6 +12,8 @@ app.use(
     })
 )
 
+const TELEGRAM_URI = `https://api.telegram.org/bot${process.env.API_TOKEN}`
+
 app.post("/new", async (req, res) => {
     const {message} = req.body;
 
@@ -25,7 +27,7 @@ app.post("/new", async (req, res) => {
     }
 
     try {
-        await axios.post('', {
+        await axios.post(`${TELEGRAM_URI}/sendMessage`, {
             chat_id: chatId,
             text: `mhem ${text}`
         });
