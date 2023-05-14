@@ -34,7 +34,7 @@ app.post("/message", async (req, res) => {
         return res.sendStatus(400)
     }
 
-    let responce = '';
+    let responce = 'Please use correct comand';
     switch(text) {
         case '/start': {
             if(Boolean(tasks[chatId])) {
