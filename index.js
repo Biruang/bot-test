@@ -42,6 +42,7 @@ const sendPing = async (id) => {
 }
 
 app.post("/message", async (req, res) => {
+    log('dddd', req)
     const {message} = req.body;
 
     const text = message?.text?.toLowerCase().trim();
