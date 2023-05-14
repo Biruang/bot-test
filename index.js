@@ -20,7 +20,7 @@ app.post("/new", async (req, res) => {
 
     console.log(message, text, chatId);
 
-    if (!messageText || !chatId) {
+    if (!text || !chatId) {
         return res.sendStatus(400)
     }
 
