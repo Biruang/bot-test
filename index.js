@@ -46,6 +46,7 @@ app.post("/message", async (req, res) => {
 
     const text = message?.text?.toLowerCase().trim();
     const chatId = message?.chat?.id;
+    log('receve', text, chatId);
     if (!text || !chatId) {
         return res.sendStatus(400)
     }
