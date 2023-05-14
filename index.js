@@ -43,7 +43,7 @@ const sendPing = async (id) => {
 
 app.post("/message", async (req, res) => {
     log('dddd', req)
-    const {message} = req.body;
+    const message = req.body?.edited_message || req.body?.message
 
     const text = message?.text?.toLowerCase().trim();
     const chatId = message?.chat?.id;
