@@ -47,7 +47,7 @@ app.post("/message", async (req, res) => {
 
     const text = message?.text?.toLowerCase().trim();
     const chatId = message?.chat?.id;
-    log('receve', text, chatId);
+    log('receve', text, message?.chat);
     if (!text || !chatId) {
         return res.sendStatus(400)
     }
@@ -59,7 +59,10 @@ app.post("/message", async (req, res) => {
                 responce = 'Already tracking';
                 break;
             }
-            responce = 'Start tracking';
+            responce = `"Привет, ${message.chat.id}!
+                Рад, что ты теперь со мной, готов изменить свою жизнь и начать регулярно заботиться о гигиене своего мобильного устройства.
+                Я буду присылать тебе напоминание о том, что пора протереть мобильный телефон❤️"`;
+                
             const task = cron.schedule('* * * * *', () => {
                 sendPing(chatId)
             }, {
