@@ -39,13 +39,60 @@ const sendPing = async (id, name) => {
     }
 }
 
-cron.schedule('* * 6,11,16 * *', () => {
-    log('tasks', tasks);
-    tasks.forEach((item) => sendPing(item.id, item.name)) 
-}, {
-    scheduled: true,
-    timezone: "Europe/Moscow"
-});
+cron.schedule(
+    '* * * * *', 
+    () => {
+        log('tasks', tasks);
+        tasks.forEach((item) => sendPing(item.id, item.name)) 
+    }, {
+        scheduled: true,
+        timezone: "Europe/Moscow"
+    }
+)
+
+cron.schedule(
+    '0 7 * * *', 
+    () => {
+        log('tasks', tasks);
+        tasks.forEach((item) => sendPing(item.id, item.name)) 
+    }, {
+        scheduled: true,
+        timezone: "Europe/Moscow"
+    }
+)
+
+cron.schedule(
+    '0 6 * * *', 
+    () => {
+        log('tasks', tasks);
+        tasks.forEach((item) => sendPing(item.id, item.name)) 
+    }, {
+        scheduled: true,
+        timezone: "Europe/Moscow"
+    }
+)
+
+cron.schedule(
+    '0 11 * * *', 
+    () => {
+        log('tasks', tasks);
+        tasks.forEach((item) => sendPing(item.id, item.name)) 
+    }, {
+        scheduled: true,
+        timezone: "Europe/Moscow"
+    }
+)
+
+cron.schedule(
+    '0 16 * * *', 
+    () => {
+        log('tasks', tasks);
+        tasks.forEach((item) => sendPing(item.id, item.name)) 
+    }, {
+        scheduled: true,
+        timezone: "Europe/Moscow"
+    }
+)
 
 app.post("/message", async (req, res) => {
     const message = req.body?.edited_message || req.body?.message
