@@ -39,16 +39,16 @@ const sendPing = async (id, name) => {
     }
 }
 
-cron.schedule(
-    '* * * * *', 
-    () => {
-        log('tasks', tasks);
-        tasks.forEach((item) => sendPing(item.id, item.name)) 
-    }, {
-        scheduled: true,
-        timezone: "Europe/Moscow"
-    }
-)
+// cron.schedule(
+//     '* * * * *', 
+//     () => {
+//         log('tasks', tasks);
+//         tasks.forEach((item) => sendPing(item.id, item.name)) 
+//     }, {
+//         scheduled: true,
+//         timezone: "Europe/Moscow"
+//     }
+// )
 
 cron.schedule(
     '0 7 * * *', 
