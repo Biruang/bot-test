@@ -51,7 +51,7 @@ const sendPing = async (id, name) => {
 // )
 
 cron.schedule(
-    '0 7 * * *', 
+    '0 10 * * *', 
     () => {
         log('tasks', tasks);
         tasks.forEach((item) => sendPing(item.id, item.name)) 
