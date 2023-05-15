@@ -51,7 +51,7 @@ const sendPing = async (id, name) => {
 // )
 
 cron.schedule(
-    '0 10 * * *', 
+    '0 8 * * *', 
     () => {
         log('tasks', tasks);
         tasks.forEach((item) => sendPing(item.id, item.name)) 
@@ -60,6 +60,7 @@ cron.schedule(
         timezone: "Europe/Moscow"
     }
 )
+
 
 cron.schedule(
     '0 6 * * *', 
