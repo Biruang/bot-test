@@ -49,6 +49,7 @@ const sendPing = async (id, name) => {
 //         timezone: "Europe/Moscow"
 //     }
 // )
+log(cron.getTasks());
 
 cron.schedule(
     '0 8 * * *', 
