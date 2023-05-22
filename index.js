@@ -9,9 +9,6 @@ const { Client } = pkg;
 config();
 const TELEGRAM_URI = `https://api.telegram.org/bot${process.env.API_TOKEN}`;
 
-// const res = await axios.get(`${TELEGRAM_URI}/deleteWebhook`)
-// log(res.data);
-
 // Check webhook status before deploy
 const status = await axios.get(`${TELEGRAM_URI}/getWebhookInfo`);
 if (!status?.data || !status?.data.result.url) {
@@ -79,10 +76,10 @@ const sendPing = async (id, name) => {
   }
 };
 
-const hours = [8, 6, 11, 16, 17];
+const hours = [6, 8, 11, 16, 19];
 hours.forEach((hour) => {
   cron.schedule(
-    `30 ${hour} * * *`,
+    `0 ${hour} * * *`,
     async () => {
       log("execute task");
       try {
