@@ -55,7 +55,7 @@ try {
   const res = await client.query(`
           SELECT chatid from Subscriptions
       `);
-  log(res);
+  log("sub base initial state", res?.rows);
 } catch (err) {
   log("get db data err", err);
 }
@@ -79,53 +79,27 @@ const sendPing = async (id, name) => {
   }
 };
 
-cron.schedule(
-  "0 8 * * *",
-  () => {
-    log("tasks", tasks);
-    tasks.forEach((item) => sendPing(item.id, item.name));
-  },
-  {
-    scheduled: true,
-    timezone: "Europe/Moscow",
-  }
-);
-
-cron.schedule(
-  "0 6 * * *",
-  () => {
-    log("tasks", tasks);
-    tasks.forEach((item) => sendPing(item.id, item.name));
-  },
-  {
-    scheduled: true,
-    timezone: "Europe/Moscow",
-  }
-);
-
-cron.schedule(
-  "0 11 * * *",
-  () => {
-    log("tasks", tasks);
-    tasks.forEach((item) => sendPing(item.id, item.name));
-  },
-  {
-    scheduled: true,
-    timezone: "Europe/Moscow",
-  }
-);
-
-cron.schedule(
-  "0 16 * * *",
-  () => {
-    log("tasks", tasks);
-    tasks.forEach((item) => sendPing(item.id, item.name));
-  },
-  {
-    scheduled: true,
-    timezone: "Europe/Moscow",
-  }
-);
+const hours = [8, 6, 11, 16];
+hours.forEach((hour) => {
+  cron.schedule(
+    `0 ${hour} * * *`,
+    async () => {
+      log("execute task");
+      try {
+        const res = await client.query(`
+          SELECT chatid, name from Subscriptions
+        `);
+        res?.rows.forEach((row) => sendPing(row.chatid, row.name));
+      } catch (err) {
+        log("error while execute task", err);
+      }
+    },
+    {
+      scheduled: true,
+      timezone: "Europe/Moscow",
+    }
+  );
+});
 
 app.post("/message", async (req, res) => {
   const message = req.body?.edited_message || req.body?.message;
