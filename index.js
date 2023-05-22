@@ -29,6 +29,7 @@ const client = new Client({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+  ssl: true,
 });
 client.connect((err) => {
   if (err) {
@@ -38,6 +39,27 @@ client.connect((err) => {
   log("database connected");
 });
 
+// const query = `
+//     CREATE TABLE Subscriptions (
+//         id int,
+//         name varchar(255),
+//         chatId int
+//     )
+// `;
+// try {
+//   client.query(query);
+// } catch (err) {
+//   log("creation error", err);
+// }
+try {
+  const res = await client.query(`
+          SELECT chatid from Subscriptions
+      `);
+  log(res);
+} catch (err) {
+  log("get db data err", err);
+}
+
 const app = express();
 app.use(express.json());
 app.use(
@@ -45,8 +67,6 @@ app.use(
     extended: true,
   })
 );
-
-let tasks = [];
 
 const sendPing = async (id, name) => {
   try {
@@ -58,18 +78,6 @@ const sendPing = async (id, name) => {
     console.log(e);
   }
 };
-
-// cron.schedule(
-//     '* * * * *',
-//     () => {
-//         log('tasks', tasks);
-//         tasks.forEach((item) => sendPing(item.id, item.name))
-//     }, {
-//         scheduled: true,
-//         timezone: "Europe/Moscow"
-//     }
-// )
-log(cron.getTasks());
 
 cron.schedule(
   "0 8 * * *",
@@ -131,28 +139,47 @@ app.post("/message", async (req, res) => {
   let responce = "Не понимаю команду";
   switch (text) {
     case "/start": {
-      if (Boolean(tasks.find((el) => el.id === chatId))) {
-        responce = "Напоминания уже включены";
-        break;
-      }
-      responce = `Привет, ${message.chat.first_name}!
+      try {
+        const res = await client.query(`
+          SELECT chatid from Subscriptions
+        `);
+        if (Boolean(res?.rows.find((el) => el.chatid === chatId))) {
+          responce = "Напоминания уже включены";
+          break;
+        }
+        await client.query(`
+          INSERT INTO Subscriptions (id, name, chatId)
+          VALUES ('${res.rows.length + 1}', '${
+          message.chat.first_name
+        }', '${chatId}')
+        `);
+        responce = `Привет, ${message.chat.first_name}!
             Рад, что ты теперь со мной, готов изменить свою жизнь и начать регулярно заботиться о гигиене своего мобильного устройства.
             Я буду присылать тебе напоминание о том, что пора протереть мобильный телефон❤️`;
-
-      tasks.push({
-        id: chatId,
-        name: message.chat.first_name,
-      });
-      break;
-    }
-    case "/stop": {
-      if (!tasks.find((el) => el.id === chatId)) {
-        responce = "Сейчас нет активных напоминаний";
+        break;
+      } catch (err) {
+        log(err);
         break;
       }
-      responce = "Напоминания больше приходить не будут";
-      tasks = tasks.filter((el) => el.id !== chatId);
-      break;
+    }
+    case "/stop": {
+      try {
+        const res = await client.query(`
+          SELECT chatid FROM Subscriptions
+        `);
+        if (!Boolean(res?.rows.find((el) => el.chatid === chatId))) {
+          responce = "Сейчас нет активных напоминаний";
+          break;
+        }
+        await client.query(`
+          DELETE FROM Subscriptions WHERE chatid='${chatId}'
+        `);
+        responce = "Напоминания больше приходить не будут";
+        break;
+      } catch (err) {
+        log("/stop error", err);
+        break;
+      }
     }
   }
 
