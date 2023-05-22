@@ -76,7 +76,7 @@ const sendPing = async (id, name) => {
   }
 };
 
-const hours = [6, 8, 11, 16, 19];
+const hours = [6, 8, 11, 16, 18];
 hours.forEach((hour) => {
   cron.schedule(
     `0 ${hour} * * *`,
